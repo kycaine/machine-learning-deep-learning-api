@@ -1,0 +1,12 @@
+fastapi
+pydantic
+uvicorn
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+joblib
+openpyxl
+ydata-profiling
+isort

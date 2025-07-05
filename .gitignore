@@ -1,0 +1,85 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.env.bak/
+env/
+.venv/
+
+# VS Code / IDE settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test / coverage outputs
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+
+# Build / dist
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Project-specific
+outputs/
+*.csv
+*.xlsx
+*.xls
+*.json
+*.log
+
+# PyCharm specific
+*.idea/
+
+# Logs
+*.log
+
+# Pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# dotenv
+*.env
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# profiling data
+.prof
+
+# FastAPI generated docs cache
+__pydantic__/ 
+
+# Other
+*.bak
+*.tmp

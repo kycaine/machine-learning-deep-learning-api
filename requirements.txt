@@ -10,3 +10,5 @@ joblib
 openpyxl
 ydata-profiling
 isort
+dateparser
+python-multipart

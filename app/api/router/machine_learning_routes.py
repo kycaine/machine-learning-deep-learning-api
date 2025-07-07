@@ -4,20 +4,21 @@ import os
 import tempfile
 from pathlib import Path
 
+import pandas as pd
 from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 
 from app.api.schemas.general_request import GeneralRequest
-from app.config.paths import *
+from app.config.constants import *
 from app.machine_learning.eda import generate_eda
-from app.machine_learning.preprocessing import clean_data_strict
+from app.machine_learning.preprocessing import clean_data, feature_engineering
 
 router = APIRouter()
 
 @router.post("/clean")
 async def clean_data_api(
-    file: UploadFile = File(..., description="CSV or XLSX file to clean"),
-    request_str: str = Form(..., description='JSON string, e.g. {"target_column":"price","task_type":"regression","feature_columns":["size","rooms","location"],"columns":{"price":"float","size":"float","rooms":"int","location":"str"}}')
+    file: UploadFile = File(..., description=UPLOAD_DESCRIPTION),
+    request_str: str = Form(..., description=REQUEST_DESCRIPTION)
 ):
     request_data = json.loads(request_str)
     request_obj = GeneralRequest(**request_data)
@@ -26,7 +27,7 @@ async def clean_data_api(
         tmp.write(await file.read())
         tmp_path = tmp.name
 
-    cleaned_path, summary = clean_data_strict(tmp_path, request_obj.columns, original_filename=file.filename)
+    cleaned_path, summary = clean_data(tmp_path, request_obj.columns, original_filename=file.filename)
 
     return JSONResponse(content={
         "download_url": OUTPUTS_CLEANED + "/" + os.path.basename(cleaned_path),
@@ -44,10 +45,39 @@ async def run_eda_api(file: UploadFile = File(...)):
     tmp_path.write_bytes(await file.read())
 
     zip_file, summary = generate_eda(tmp_path, file.filename)
-
     download_url = f"{zip_file.replace(os.sep, '/')}"
 
     return JSONResponse(content={
         "download_url": download_url,
         "summary": summary
     })
+
+
+
+@router.post("/feature-engineering/")
+async def run_feature_engineering_api(
+    file: UploadFile,
+    params: str = Form(...)
+):
+    try:
+        params_dict = json.loads(params)
+        feature_columns = params_dict.get("feature_columns")
+        columns_schema = params_dict.get("columns")
+
+        df = pd.read_csv(file.file)
+        filename = file.filename
+
+        processed_filename, processed_df = feature_engineering(df, filename, feature_columns, columns_schema)
+
+        download_url = f"{OUTPUTS_FEATURE_ENGINNERING}/{processed_filename}"
+        preview = processed_df.head().to_dict(orient="records")
+        columns_after = list(processed_df.columns)
+
+        return {
+            "download_url": download_url,
+            "preview": preview,
+            "columns_after": columns_after
+        }
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

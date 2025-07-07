@@ -6,7 +6,7 @@ from zipfile import ZipFile
 import pandas as pd
 from ydata_profiling import ProfileReport
 
-from app.config.paths import *
+from app.config.constants import *
 
 
 def generate_eda(file_path: str, original_filename: str):

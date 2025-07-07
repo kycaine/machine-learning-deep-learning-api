@@ -3,6 +3,8 @@ import os
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
+from app.config.constants import *
+
 router = APIRouter()
 
 @router.get("/download/{file_path:path}")
@@ -12,4 +14,4 @@ async def download_file(file_path: str):
     if os.path.exists(abs_path) and abs_path.startswith(os.path.abspath("outputs")):
         return FileResponse(abs_path, filename=file_path.split("/")[-1])
     else:
-        return {"error": "File not found or invalid path"}
+        return {"error": FILE_NOT_FOUND_OR_INVALID_PATH}

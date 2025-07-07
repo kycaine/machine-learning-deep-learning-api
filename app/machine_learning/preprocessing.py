@@ -4,11 +4,12 @@ from datetime import datetime
 import dateparser
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
-from app.config.paths import OUTPUTS_CLEANED
+from app.config.constants import *
 
 
-def clean_data_strict(file_path: str, columns_schema: dict, original_filename: str):
+def clean_data(file_path: str, columns_schema: dict, original_filename: str):
     df = pd.read_csv(file_path)
     
     requested_columns = list(columns_schema.keys())
@@ -56,3 +57,46 @@ def clean_data_strict(file_path: str, columns_schema: dict, original_filename: s
     }
 
     return cleaned_path, summary
+
+def feature_engineering(df: pd.DataFrame, filename: str, feature_columns: list, columns_schema: dict):
+    processed_df = preprocess_data(df, feature_columns, columns_schema)
+    processed_dir = OUTPUTS_FEATURE_ENGINNERING
+
+    processed_filename = f"processed_{filename}"
+    processed_path = os.path.join(processed_dir, processed_filename)
+    processed_df.to_csv(processed_path, index=False)
+
+    return processed_filename, processed_df
+
+def preprocess_data(df: pd.DataFrame, feature_columns: list, columns_schema: dict):
+    df = df[feature_columns].copy()
+
+    date_columns = [col for col in feature_columns if columns_schema.get(col) in ['str', 'datetime'] and 'date' in col.lower()]
+    for date_col in date_columns:
+        df = generate_date_features(df, date_col)
+
+    categorical_columns = [col for col in df.columns if columns_schema.get(col) == 'str' and col not in date_columns]
+    df = encode_categorical_columns(df, categorical_columns)
+
+    numerical_columns = [col for col in df.columns if df[col].dtype in ['float64', 'int64']]
+    df = scale_numerical_columns(df, numerical_columns)
+
+    return df
+
+def generate_date_features(df, date_column):
+    df[date_column] = pd.to_datetime(df[date_column], errors='coerce')
+    df[f"{date_column}_dayofweek"] = df[date_column].dt.dayofweek
+    df[f"{date_column}_month"] = df[date_column].dt.month
+    df[f"{date_column}_day"] = df[date_column].dt.day
+    df.drop(columns=[date_column], inplace=True)
+    return df
+
+# do encode if it category data
+def encode_categorical_columns(df, categorical_columns):
+    return pd.get_dummies(df, columns=categorical_columns, drop_first=True)
+
+def scale_numerical_columns(df, numerical_columns):
+    from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler()
+    df[numerical_columns] = scaler.fit_transform(df[numerical_columns])
+    return df

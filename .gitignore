@@ -83,3 +83,6 @@ __pydantic__/
 # Other
 *.bak
 *.tmp
+
+
+data/raw

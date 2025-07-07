@@ -13,6 +13,12 @@ def clean_data(file_path: str, columns_schema: dict, original_filename: str):
     df = pd.read_csv(file_path)
     
     requested_columns = list(columns_schema.keys())
+    
+    #validation column
+    missing = [col for col in requested_columns if col not in df.columns]
+    if missing:
+        raise ValueError(f"{MISSING_UNMATCH_COLLUMN}: {missing}")
+    
     df = df[requested_columns]
 
     for col, dtype in columns_schema.items():

@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.schemas.general_request import GeneralRequest
 from app.config.constants import *
+from app.config.file_manager import * 
 from app.machine_learning.eda import generate_eda
 from app.machine_learning.preprocessing import clean_data, feature_engineering
 
@@ -28,6 +29,8 @@ async def clean_data_api(
         tmp_path = tmp.name
 
     cleaned_path, summary = clean_data(tmp_path, request_obj.columns, original_filename=file.filename)
+    
+    save_raw_data(file)
 
     return JSONResponse(content={
         "download_url": OUTPUTS_CLEANED + "/" + os.path.basename(cleaned_path),

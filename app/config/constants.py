@@ -9,11 +9,15 @@ OUTPUTS_EDA = "outputs/eda"
 
 OUTPUTS_ZIPS = "outputs/zips"
 
+DATA_RAW = "data/raw"
+
 # ERROR
 
 FILE_NOT_FOUND_OR_INVALID_PATH = "File not found"
 
 UNSPORTED_FILE_TYPE = "Unsupported file type"
+
+MISSING_UNMATCH_COLLUMN = "Missing/Unmatch columns in uploaded file"
 
 # DESC
 

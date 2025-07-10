@@ -11,6 +11,8 @@ OUTPUTS_ZIPS = "outputs/zips"
 
 DATA_RAW = "data/raw"
 
+OUTPUTS_MODELS = "outputs/models"
+
 # ERROR
 
 FILE_NOT_FOUND_OR_INVALID_PATH = "File not found"

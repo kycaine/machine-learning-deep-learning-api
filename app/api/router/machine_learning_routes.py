@@ -13,6 +13,7 @@ from app.config.constants import *
 from app.config.file_manager import * 
 from app.machine_learning.eda import generate_eda
 from app.machine_learning.preprocessing import clean_data, feature_engineering
+from app.machine_learning.modeling import train_model
 
 router = APIRouter()
 
@@ -56,7 +57,6 @@ async def run_eda_api(file: UploadFile = File(...)):
     })
 
 
-
 @router.post("/feature-engineering/")
 async def run_feature_engineering_api(
     file: UploadFile,
@@ -84,3 +84,27 @@ async def run_feature_engineering_api(
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
+    
+@router.post("/train_model")
+async def train_model_endpoint(
+    file: UploadFile,
+    request: str = Form(...)
+):
+    request_data = json.loads(request)
+    req = GeneralRequest(**request_data)
+
+    df = pd.read_csv(file.file)
+    original_filename = os.path.splitext(file.filename)[0]
+
+    download_url, summary = train_model(
+        df,
+        target_column=req.target_column,
+        feature_columns=req.feature_columns,
+        base_filename=original_filename
+    )
+
+    return {
+        "download_url": download_url,
+        "summary": summary
+    }

@@ -1,13 +1,7 @@
 # ML-DL General API Project
+This project is a general-purpose machine learning / deep learning API built with FastAPI.
 
-"This project is a general machine learning / deep learning API.  
-Users can upload any dataset (CSV/Excel) and define:
-
-- Which column to predict (`target_column`)
-- Task type: `regression` or `classification`
-- Which columns to use as features
-
-The pipeline will automatically train and evaluate the model."
+It allows users to upload any dataset (CSV/Excel), configure task parameters, and automatically run through a full ML pipeline — including cleaning, EDA, feature engineering, training, prediction, and visualization.
 
 # Project Structure
 
@@ -15,101 +9,139 @@ ML-DL-API-PROJECT/
 ├── app/
 │ ├── api/
 │ │ ├── router/
-│ │ │ ├── data_cleaning_routes.py
+│ │ │ ├── machine_learning_routes.py
 │ │ │ └── download_routes.py
 │ │ └── schemas/
-│ │ └── schemas.py
+│ │ └── general_request.py
 │ ├── config/
-│ │ ├── init_folders.py
-│ │ └── paths.py
+│ │ ├── file_manager.py
+│ │ └── constants.py
 │ ├── machine_learning/
 │ │ └── preprocessing.py
+│ │ └── eda.py
+│ │ └── processing.py
 │ └── main.py
 ├── data/
 ├── docs/
 ├── models/
+├── outputs
 ├── .gitignore
 ├── README.md
 └── requirements.txt
 
+# API
+| Endpoint                    | Description                                          |
+| --------------------------- | ---------------------------------------------------- |
+| `POST /clean`               | Clean raw dataset (handle missing values, fix types) |
+| `POST /eda`                 | Generate automated visualizations and basic stats    |
+| `POST /feature-engineering` | Apply feature transformations                        |
+| `POST /train-and-predict`   | Train model and return predictions & visualizations  |
+| `GET /download/{file_path}` | Download result files (CSV, ZIP, images, etc.)       |
+
+
 # INPUT (API Request Body)
 
-```json
+basic payload metadata
+
 {
-  "target_column": "price",
-  "task_type": "regression",
-  "feature_columns": ["size", "rooms", "location"],
-  "columns": {
-    "price": "float",
-    "size": "float",
-    "rooms": "int",
-    "location": "str"
+  "target_column": "string",                    // Column you want to predict
+  "task_type": "regression/classification",     // Choose the type of task
+  "feature_columns": ["col1", "col2", ...],     // List of input features
+  "columns": {                                  // Column names and data types
+    "col1": "str/int/float",
+    "col2": "str/int/float"
   }
 }
-```
 
-# OUTPUT
 
-```json
+Example 1: payload raw dataset
 {
-  "status": "success",
-  "score": 0.87,
-  "model_path": "models/model_123.pkl",
-  "feature_plot": "outputs/plot_123.png"
+  "target_column": "new_cases",
+  "task_type": "regression",
+  "feature_columns": ["date", "country", "new_deaths", "total_cases", "total_deaths", "recovered", "active_cases", "vaccinated"],
+  "columns": {
+    "id": "int",
+    "date": "str",
+    "country": "str",
+    "new_cases": "float",
+    "new_deaths": "float",
+    "total_cases": "float",
+    "total_deaths": "float",
+    "recovered": "float",
+    "active_cases": "float",
+    "vaccinated": "float"
+  }
 }
-```
 
-# How it works
 
-Upload dataset (.csv or .xlsx)
+Example 2: after feature enginnering
+Once your data goes through feature engineering (e.g., date breakdowns, country encoding), your input may look like this:
 
-Send JSON request with task and target info
+{
+  "target_column": "total_cases",
+  "task_type": "regression",
+  "feature_columns": [
+    "new_deaths",
+    "total_cases",
+    "total_deaths",
+    "recovered",
+    "active_cases",
+    "vaccinated",
+    "date_dayofweek",
+    "date_month",
+    "date_day",
+    "country_Germany",
+    "country_India",
+    "country_Italy",
+    "country_Spain",
+    "country_USA"
+  ],
+  "columns": {
+    "id": "int",
+    "date": "str",
+    "country": "str",
+    "new_cases": "float",
+    "new_deaths": "float",
+    "total_cases": "float",
+    "total_deaths": "float",
+    "recovered": "float",
+    "active_cases": "float",
+    "vaccinated": "float",
+    "date_dayofweek": "int",
+    "date_month": "int",
+    "date_day": "int",
+    "country_Germany": "int",
+    "country_India": "int",
+    "country_Italy": "int",
+    "country_Spain": "int",
+    "country_USA": "int"
+  }
+}
 
-The API processes, trains, and evaluates automatically
 
-Receive back the model, score, and plots
 
 # I/O WORK FLOW
+| Step                 | Input                      | Output                                |
+| -------------------- | -------------------------- | ------------------------------------- |
+| Clean Data           | Raw CSV                    | Cleaned DataFrame                     |
+| Exploratory Analysis | Cleaned DataFrame          | Stats, plots                          |
+| Feature Engineering  | Cleaned DataFrame          | Transformed features                  |
+| Train + Predict      | Engineered data + metadata | Predictions, metrics, plots, CSV, ZIP |
+| Download File        | File path                  | Actual CSV / ZIP                      |
 
-Data Cleaning
-Input : Raw data
-Output : Cleaned data
-
-Exploratory Data Analysis (EDA)
-Input : Output from data cleaning
-Output : Visualization & data statistics
-
-Feature Engineering
-Input : Output from data cleaning
-Output : Transformed features to enhance the model
-
-Modeling
-Input : Output from feature engineering
-Output : The predictions
-
-Model Evaluation
-Input : The predictions from modeling
-Output : Assessment of model performance
-
-Model Optimization
-Input:
-
-- Output from model evaluation
-
-- The predictions from modeling
-
-Output : Optimized model performance
 
 # End-to-End ML Process
 
-Data Cleaning → Removes noise, handles missing values, and corrects errors in the dataset.
+Data Cleaning → Fix missing values, cast types
 
-Exploratory Data Analysis (EDA) → Visualizes and analyzes data patterns to gain insights.
+EDA → Understand patterns and distributions
 
-Feature Engineering → Creates new features or transforms existing ones to improve model performance.
+Feature Engineering → Create enhanced inputs for the model
 
-Modeling → Trains a machine learning model using the processed data.
+Modeling → Train RandomForest (or similar)
 
-Model Evaluation → Measures model performance using metrics such as MAE, RMSE, R², or accuracy.
+Model Evaluation → View MAE, RMSE, R² metrics
 
-Model Optimization → Enhances model performance through hyperparameter tuning or other optimization techniques.
+Visualization → Plot predictions vs actuals
+
+Download → Get outputs (CSV/ZIP)

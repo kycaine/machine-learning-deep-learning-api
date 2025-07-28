@@ -1,6 +1,9 @@
 import os
+
 from fastapi import UploadFile
+
 from app.config.constants import *
+
 
 def save_raw_data(upload_file: UploadFile):
     filename = upload_file.filename

@@ -13,6 +13,10 @@ DATA_RAW = "data/raw"
 
 OUTPUTS_MODELS = "outputs/models"
 
+OUTPUTS_PREDICT = "outputs/predict"
+
+OUTPUTS_VISUAL = "outputs/visual"
+
 # ERROR
 
 FILE_NOT_FOUND_OR_INVALID_PATH = "File not found"

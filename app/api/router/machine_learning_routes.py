@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import shutil
 import tempfile
 from pathlib import Path
 
@@ -10,19 +11,19 @@ from fastapi.responses import JSONResponse
 
 from app.api.schemas.general_request import GeneralRequest
 from app.config.constants import *
-from app.config.file_manager import * 
+from app.config.file_manager import *
 from app.machine_learning.eda import generate_eda
+from app.machine_learning.processing import *
 from app.machine_learning.preprocessing import clean_data, feature_engineering
-from app.machine_learning.modeling import train_model
 
 router = APIRouter()
 
 @router.post("/clean")
 async def clean_data_api(
     file: UploadFile = File(..., description=UPLOAD_DESCRIPTION),
-    request_str: str = Form(..., description=REQUEST_DESCRIPTION)
+    metadata: str = Form(..., description=REQUEST_DESCRIPTION)
 ):
-    request_data = json.loads(request_str)
+    request_data = json.loads(metadata)
     request_obj = GeneralRequest(**request_data)
 
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -57,13 +58,13 @@ async def run_eda_api(file: UploadFile = File(...)):
     })
 
 
-@router.post("/feature-engineering/")
+@router.post("/feature-engineering")
 async def run_feature_engineering_api(
     file: UploadFile,
-    params: str = Form(...)
+    metadata: str = Form(...)
 ):
     try:
-        params_dict = json.loads(params)
+        params_dict = json.loads(metadata)
         feature_columns = params_dict.get("feature_columns")
         columns_schema = params_dict.get("columns")
 
@@ -85,26 +86,19 @@ async def run_feature_engineering_api(
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-    
-@router.post("/train_model")
-async def train_model_endpoint(
-    file: UploadFile,
-    request: str = Form(...)
+
+@router.post("/train-and-predict")
+async def train_and_predict_endpoint(
+    data_file: UploadFile,
+    metadata: str = Form(...)
 ):
-    request_data = json.loads(request)
-    req = GeneralRequest(**request_data)
+    metadata_dict = json.loads(metadata)
 
-    df = pd.read_csv(file.file)
-    original_filename = os.path.splitext(file.filename)[0]
-
-    download_url, summary = train_model(
-        df,
-        target_column=req.target_column,
-        feature_columns=req.feature_columns,
-        base_filename=original_filename
-    )
+    evaluation, predictions, output_path, visual_path = train_and_predict(data_file, metadata_dict)
 
     return {
-        "download_url": download_url,
-        "summary": summary
+        "modeling": evaluation,
+        "predictions": predictions,
+        "download_predict_url": output_path,
+        "download_visual_url": visual_path
     }

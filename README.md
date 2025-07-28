@@ -4,7 +4,7 @@ This project is a general-purpose machine learning / deep learning API built wit
 It allows users to upload any dataset (CSV/Excel), configure task parameters, and automatically run through a full ML pipeline — including cleaning, EDA, feature engineering, training, prediction, and visualization.
 
 # Project Structure
-
+```text
 ML-DL-API-PROJECT/
 ├── app/
 │ ├── api/
@@ -28,6 +28,7 @@ ML-DL-API-PROJECT/
 ├── .gitignore
 ├── README.md
 └── requirements.txt
+```
 
 # API
 | Endpoint                    | Description                                          |
@@ -42,7 +43,7 @@ ML-DL-API-PROJECT/
 # INPUT (API Request Body)
 
 basic payload metadata
-
+```json
 {
   "target_column": "string",                    // Column you want to predict
   "task_type": "regression/classification",     // Choose the type of task
@@ -52,9 +53,11 @@ basic payload metadata
     "col2": "str/int/float"
   }
 }
+```
 
 
 Example 1: payload raw dataset
+```json
 {
   "target_column": "new_cases",
   "task_type": "regression",
@@ -72,11 +75,12 @@ Example 1: payload raw dataset
     "vaccinated": "float"
   }
 }
+```
 
 
 Example 2: after feature enginnering
 Once your data goes through feature engineering (e.g., date breakdowns, country encoding), your input may look like this:
-
+```json
 {
   "target_column": "total_cases",
   "task_type": "regression",
@@ -117,7 +121,7 @@ Once your data goes through feature engineering (e.g., date breakdowns, country 
     "country_USA": "int"
   }
 }
-
+```
 
 
 # I/O WORK FLOW

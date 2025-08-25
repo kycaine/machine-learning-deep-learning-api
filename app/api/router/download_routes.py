@@ -7,7 +7,7 @@ from app.config.constants import *
 
 router = APIRouter()
 
-@router.get("/download/{file_path:path}")
+@router.get("/download/{file_path:path}", tags=["Download"])
 async def download_file(file_path: str):
     abs_path = os.path.abspath(file_path)
     

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api.router import download_routes, machine_learning_routes
+from app.api.router import download_routes, machine_learning_routes, deep_learning_routes
 from app.config.init_folders import create_required_folders
 
 create_required_folders()
@@ -12,4 +12,5 @@ app = FastAPI(
 )
 
 app.include_router(machine_learning_routes.router)
+app.include_router(deep_learning_routes.router)
 app.include_router(download_routes.router)

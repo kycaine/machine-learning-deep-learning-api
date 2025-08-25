@@ -6,7 +6,8 @@ REQUIRED_FOLDERS = [
     "outputs/feature_engineering",
     "outputs/models",
     "outputs/zips",
-    "data/raw"
+    "data/raw",
+    "models/dl"
 ]
 
 def create_required_folders():

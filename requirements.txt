@@ -12,3 +12,5 @@ ydata-profiling
 isort
 dateparser
 python-multipart
+tensorflow>=2.15.0
+tensorboard 

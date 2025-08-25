@@ -1,9 +1,9 @@
-# ML-DL General API Project
+# MACHINE LEARNING
 This project is a general-purpose machine learning / deep learning API built with FastAPI.
 
 It allows users to upload any dataset (CSV/Excel), configure task parameters, and automatically run through a full ML pipeline — including cleaning, EDA, feature engineering, training, prediction, and visualization.
 
-# Project Structure
+## Project Structure
 ```text
 ML-DL-API-PROJECT/
 ├── app/
@@ -30,7 +30,7 @@ ML-DL-API-PROJECT/
 └── requirements.txt
 ```
 
-# API
+## API
 | Endpoint                    | Description                                          |
 | --------------------------- | ---------------------------------------------------- |
 | `POST /clean`               | Clean raw dataset (handle missing values, fix types) |
@@ -40,7 +40,7 @@ ML-DL-API-PROJECT/
 | `GET /download/{file_path}` | Download result files (CSV, ZIP, images, etc.)       |
 
 
-# INPUT (API Request Body)
+## INPUT (API Request Body)
 
 basic payload metadata
 ```json
@@ -124,7 +124,7 @@ Once your data goes through feature engineering (e.g., date breakdowns, country 
 ```
 
 
-# I/O WORK FLOW
+## I/O WORK FLOW
 | Step                 | Input                      | Output                                |
 | -------------------- | -------------------------- | ------------------------------------- |
 | Clean Data           | Raw CSV                    | Cleaned DataFrame                     |
@@ -134,7 +134,7 @@ Once your data goes through feature engineering (e.g., date breakdowns, country 
 | Download File        | File path                  | Actual CSV / ZIP                      |
 
 
-# End-to-End ML Process
+## End-to-End ML Process
 
 Data Cleaning → Fix missing values, cast types
 
@@ -149,3 +149,12 @@ Model Evaluation → View MAE, RMSE, R² metrics
 Visualization → Plot predictions vs actuals
 
 Download → Get outputs (CSV/ZIP)
+
+
+
+
+# =========================================================================================== #
+# DEEP LEARNING
+
+##
+

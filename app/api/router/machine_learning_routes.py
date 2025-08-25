@@ -9,7 +9,7 @@ import pandas as pd
 from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 
-from app.api.schemas.general_request import GeneralRequest
+from app.api.schemas.request import GeneralRequest
 from app.config.constants import *
 from app.config.file_manager import *
 from app.machine_learning.eda import generate_eda
@@ -18,7 +18,7 @@ from app.machine_learning.preprocessing import clean_data, feature_engineering
 
 router = APIRouter()
 
-@router.post("/clean")
+@router.post("/clean", tags=["Machine Learning"])
 async def clean_data_api(
     file: UploadFile = File(..., description=UPLOAD_DESCRIPTION),
     metadata: str = Form(..., description=REQUEST_DESCRIPTION)
@@ -40,7 +40,7 @@ async def clean_data_api(
     })
 
 
-@router.post("/eda")
+@router.post("/eda", tags=["Machine Learning"])
 async def run_eda_api(file: UploadFile = File(...)):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     original_name = file.filename.replace(".csv", "").replace(".xlsx", "")
@@ -58,7 +58,7 @@ async def run_eda_api(file: UploadFile = File(...)):
     })
 
 
-@router.post("/feature-engineering")
+@router.post("/feature-engineering", tags=["Machine Learning"])
 async def run_feature_engineering_api(
     file: UploadFile,
     metadata: str = Form(...)
@@ -87,7 +87,7 @@ async def run_feature_engineering_api(
         return {"status": "error", "message": str(e)}
     
 
-@router.post("/train-and-predict")
+@router.post("/train-and-predict", tags=["Machine Learning"])
 async def train_and_predict_endpoint(
     data_file: UploadFile,
     metadata: str = Form(...)

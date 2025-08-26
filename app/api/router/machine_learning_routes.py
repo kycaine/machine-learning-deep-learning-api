@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-import shutil
 import tempfile
 from pathlib import Path
 
@@ -9,36 +8,13 @@ import pandas as pd
 from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 
-from app.api.schemas.request import GeneralRequest
 from app.config.constants import *
 from app.config.file_manager import *
 from app.machine_learning.eda import generate_eda
 from app.machine_learning.processing import *
-from app.machine_learning.preprocessing import clean_data, feature_engineering
+from app.machine_learning.preprocessing import feature_engineering
 
 router = APIRouter()
-
-@router.post("/clean", tags=["Machine Learning"])
-async def clean_data_api(
-    file: UploadFile = File(..., description=UPLOAD_DESCRIPTION),
-    metadata: str = Form(..., description=REQUEST_DESCRIPTION)
-):
-    request_data = json.loads(metadata)
-    request_obj = GeneralRequest(**request_data)
-
-    with tempfile.NamedTemporaryFile(delete=False) as tmp:
-        tmp.write(await file.read())
-        tmp_path = tmp.name
-
-    cleaned_path, summary = clean_data(tmp_path, request_obj.columns, original_filename=file.filename)
-    
-    save_raw_data(file)
-
-    return JSONResponse(content={
-        "download_url": OUTPUTS_CLEANED + "/" + os.path.basename(cleaned_path),
-        "summary": summary
-    })
-
 
 @router.post("/eda", tags=["Machine Learning"])
 async def run_eda_api(file: UploadFile = File(...)):

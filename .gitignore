@@ -84,5 +84,6 @@ __pydantic__/
 *.bak
 *.tmp
 
-
-data/raw
+outputs
+venv
+data/raw/

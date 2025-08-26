@@ -1,13 +1,18 @@
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 
-def build_model(input_dim: int) -> Sequential:
+def build_model():
     model = Sequential([
-        Input(shape=(input_dim,)),
-        Dense(128, activation='relu'),
-        Dense(64, activation='relu'),
-        Dense(1) 
+        Dense(64, activation="relu"),
+        Dense(32, activation="relu"),
+        Dense(1)   # output regression
     ])
-    model.compile(optimizer=Adam(0.001), loss='mse', metrics=['mae'])
+    
+    model.compile(
+        optimizer=Adam(0.001),
+        loss="mse",
+        metrics=["mae"]
+    )
     return model
